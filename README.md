@@ -175,7 +175,7 @@ Create the signing table at /etc/opendkim/signing.table. This file tells opendki
 *@domain3.com           XXXX._domainkey.domain3.com
 ```
 
-Create the key table at /etc/opendkim/key.table. This maps the selector.domain value to the specific signing key that you created when you ran opendkim-genkey way back in step 2. You can use one key for all domains, or a separate key for each (I'd recommend the latter). If you need to create additional keys, run `opendkim-genkey -b 2048 -d domainX.com -D /etc/opendkim/keys/domainX.key -s XXXX -v`. Also ensure that any new key you create is readable-writeable only by opendkim (chmod 600).
+Create the key table at /etc/opendkim/key.table. This maps the selector.domain value to the specific signing key that you created when you ran opendkim-genkey way back in step 2. You can use one key for all domains, or a separate key for each (I'd recommend the latter). If you need to create additional keys, run `opendkim-genkey -b 2048 -d domainX.com -D /etc/opendkim/keys/domainX.key -s XXXX -v`. Also ensure that any new key you create is readable-writeable only by opendkim (`chmod 600`).
 
 ```
 XXXX._domainkey.domain1.com    domain1.com:XXXX:/etc/opendkim/keys/domain1.key
@@ -241,7 +241,7 @@ Type=forking
 PIDFile=/var/run/opendkim/opendkim.pid  <----- Delete this
 ```
 
-This will remove the "Can't open PID file /run/opendkim/opendkim.pid" that you may see when opendkim starts up. Remember to run systemctl daemon-reload to update the generator file after making this change.
+This will remove the "Can't open PID file /run/opendkim/opendkim.pid" that you may see when opendkim starts up. Remember to run `systemctl daemon-reload` to update the generator file after making this change.
 
 Finally, restart everything and test (`systemctl restart opendkim postfix`). As with SPF, you can send email from your domain to Gmail (Show Original) or a service like [https://www.mail-tester.com](https://www.mail-tester.com) to view your results. The mail.log will also show DKIM status messages. If DKIM checks are working, you'll see "DKIM: PASS" in your tests, and incoming messages will show DKIM verification in the headers as well (again, using Amazon as an example):
 
