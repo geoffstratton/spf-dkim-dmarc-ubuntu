@@ -189,9 +189,9 @@ Next create the trusted.hosts file at /etc/opendkim/trusted.hosts. This file tel
 127.0.0.1
 localhost
 
-*.mydomain1.com
-*.mydomain2.com
-*.mydomain3.com
+*.domain1.com
+*.domain2.com
+*.domain3.com
 ```
 
 When you run opendkim-genkey, it creates two files: the private key that should live in a protected place on your server, and a XXXX.txt file named after the the -s (selector) value. The .txt file contains the public key that goes in your DNS record to permit other email systems to validate your DKIM signature. So create a TXT DNS record for your domain -- name it XXXX._domainkey, and give it the value in quotes from your XXXX.txt file:
@@ -205,10 +205,10 @@ Make sure you remove the additional quotes or whitespace from the strings here, 
 Now test your setup:
 
 ```
-root@ubuntu:/# opendkim-testkey -d mydomain1.com -s XXXX -vvv
+root@ubuntu:/# opendkim-testkey -d domain1.com -s XXXX -vvv
 
 opendkim-testkey: using default configfile /etc/opendkim.conf
-opendkim-testkey: checking key 'XXXX._domainkey.mydomain1.com'
+opendkim-testkey: checking key 'XXXX._domainkey.domain1.com'
 opendkim-testkey: key secure
 opendkim-testkey: key OK
 ```
@@ -246,7 +246,7 @@ This will remove the "Can't open PID file /run/opendkim/opendkim.pid" that you m
 Finally, restart everything and test (`systemctl restart opendkim postfix`). As with SPF, you can send email from your domain to Gmail (Show Original) or a service like [https://www.mail-tester.com](https://www.mail-tester.com) to view your results. The mail.log will also show DKIM status messages. If DKIM checks are working, you'll see "DKIM: PASS" in your tests, and incoming messages will show DKIM verification in the headers as well (again, using Amazon as an example):
 
 ```
-Authentication-Results: mydomain1.com; dkim=pass (1024-bit key; unprotected) header.d=amazon.com etc.; dkim=pass (1024-bit key; unprotected) etc. dkim-atps=neutral 
+Authentication-Results: domain1.com; dkim=pass (1024-bit key; unprotected) header.d=amazon.com etc.; dkim=pass (1024-bit key; unprotected) etc. dkim-atps=neutral 
 ```
 
 For more on DKIM, check out the [OpenDKIM home page](http://www.opendkim.org/).
@@ -258,7 +258,7 @@ With SPF and DKIM in place, we might as well add a [DMARC](https://dmarc.org/) r
 To implement DMARC, just add a TXT DNS record for your domain named _dmarc and give it the following value:
 
 ```
-v=DMARC1; p=none; pct=100; fo=1; rua=mailto:dmarc-reports@mydomain1.com
+v=DMARC1; p=none; pct=100; fo=1; rua=mailto:dmarc-reports@domain1.com
 ```
 
-You can test this with dig (`dig txt +short _dmarc.mydomain1.com`) or by using Gmail or [https://www.mail-tester.com](https://www.mail-tester.com). For receiving and interpreting DMARC reports, [Postmark](https://dmarc.postmarkapp.com/) offers a nice service.
+You can test this with dig (`dig txt +short _dmarc.domain1.com`) or by using Gmail or [https://www.mail-tester.com](https://www.mail-tester.com). For receiving and interpreting DMARC reports, [Postmark](https://dmarc.postmarkapp.com/) offers a nice service.
